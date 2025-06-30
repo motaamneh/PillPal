@@ -29,11 +29,11 @@ public class MedicationLogService {
         return medicationLogRepository.save(log);
     }
     public List<MedicationLog> getLogsByUserAndDate(Long userId, LocalDate date) {
-        return medicationLogRepository.findByUserAndDate(userId,date);
+        return medicationLogRepository.findByUser_IdAndDate(userId,date);
     }
-    public List<MedicationLog> getAllLogsForUser(Long userId) {
-        return medicationLogRepository.findByUserId(userId);
-    }
+//    public List<MedicationLog> getAllLogsForUser(Long userId) {
+//        return medicationLogRepository.(userId);
+//    }
     public boolean didUserLogToday(Long scheduleId, LocalDate date) {
         return medicationLogRepository.existsByScheduleIdAndDate(scheduleId,date);
     }
@@ -51,4 +51,7 @@ public class MedicationLogService {
     }
 
 
+//    public List<MedicationLog> getAllLogsForUser(Long userId) {
+//        return medicationLogRepository.getAllLogsForUser(userId);
+//    }
 }
