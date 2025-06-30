@@ -21,22 +21,21 @@ public class MedicationLogController {
     public List<MedicationLog> getLogsByUserAndDate(@PathVariable Long userId, @PathVariable String date) {
         return logService.getLogsByUserAndDate(userId, LocalDate.parse(date));
     }
-    // Create log
+
     @PostMapping("/medication/{medicationId}")
     public MedicationLog logMedication(@PathVariable Long medicationId, @RequestBody MedicationLog log) {
         return logService.logMedication(medicationId, log);
     }
 
-    // Update log
     @PutMapping("/{id}")
     public MedicationLog updateLog(@PathVariable Long id, @RequestBody MedicationLog log) {
         return logService.updateLog(id, log);
     }
 
-    @GetMapping("/user/{userId}")
-    public List<MedicationLog> getLogsByUser(@PathVariable Long userId) {
-        return logService.getAllLogsForUser(userId);
-    }
+//    @GetMapping("/user/{userId}")
+//    public List<MedicationLog> getLogsByUser(@PathVariable Long userId) {
+//        return logService.getAllLogsForUser(userId);
+//    }
 
 
     @GetMapping("/did-log")

@@ -21,17 +21,16 @@ public class ScheduleService {
     public Schedule createSchedule(Schedule schedule) {
         return scheduleRepository.save(schedule);
     }
-    public Schedule updateSchedule(Long id,Schedule updatedSchedule) {
+    public Schedule updateSchedule(Long id, Schedule updatedSchedule) {
         return scheduleRepository.findById(id)
                 .map(schedule -> {
+                    // Only update these fields
                     schedule.setTime(updatedSchedule.getTime());
                     schedule.setRepeatType(updatedSchedule.getRepeatType());
                     schedule.setDaysOfWeek(updatedSchedule.getDaysOfWeek());
                     schedule.setStartDate(updatedSchedule.getStartDate());
                     schedule.setEndDate(updatedSchedule.getEndDate());
-                    schedule.setMedication(updatedSchedule.getMedication());
                     return scheduleRepository.save(schedule);
-
                 }).orElseThrow(() -> new RuntimeException("Schedule not found"));
     }
 
@@ -42,7 +41,7 @@ public class ScheduleService {
         return scheduleRepository.findAll();
     }
     public List<Schedule> getSchedulesByUser(Long id) {
-        return scheduleRepository.findByUserId(id);
+        return scheduleRepository.findByUser_Id(id);
     }
 
     public void deleteSchedule(Long id) {
@@ -53,6 +52,7 @@ public class ScheduleService {
                 .orElseThrow(() -> new RuntimeException("Medication not found with id: " + medicationId));
 
         schedule.setMedication(medication); // Link schedule to medication
+        schedule.setUser(medication.getUser());
         return scheduleRepository.save(schedule);
     }
 }
