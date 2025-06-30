@@ -1,6 +1,8 @@
 package com.motaamneh.pillpal.service;
 
+import com.motaamneh.pillpal.entity.Medication;
 import com.motaamneh.pillpal.entity.Schedule;
+import com.motaamneh.pillpal.repository.MedicationRepository;
 import com.motaamneh.pillpal.repository.ScheduleRepository;
 import org.springframework.stereotype.Service;
 
@@ -10,8 +12,10 @@ import java.util.Optional;
 @Service
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
-    public ScheduleService(ScheduleRepository scheduleRepository) {
+    private final MedicationRepository medicationRepository;
+    public ScheduleService(ScheduleRepository scheduleRepository, MedicationRepository medicationRepository) {
         this.scheduleRepository = scheduleRepository;
+        this.medicationRepository = medicationRepository;
 
     }
     public Schedule createSchedule(Schedule schedule) {
@@ -43,5 +47,12 @@ public class ScheduleService {
 
     public void deleteSchedule(Long id) {
         scheduleRepository.deleteById(id);
+    }
+    public Schedule addSchedule(Long medicationId, Schedule schedule) {
+        Medication medication = medicationRepository.findById(medicationId)
+                .orElseThrow(() -> new RuntimeException("Medication not found with id: " + medicationId));
+
+        schedule.setMedication(medication); // Link schedule to medication
+        return scheduleRepository.save(schedule);
     }
 }
