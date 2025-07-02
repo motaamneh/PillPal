@@ -1,6 +1,7 @@
 package com.motaamneh.pillpal.service;
 
 import com.motaamneh.pillpal.entity.User;
+import com.motaamneh.pillpal.exception.EmailAlreadyExistsException;
 import com.motaamneh.pillpal.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,9 @@ public class UserService {
 
     }
     public User createUser(User user) {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new EmailAlreadyExistsException("Email already exists.");
+        }
         return userRepository.save(user);
     }
     public Optional<User> getUserById(Long id) {
