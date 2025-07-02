@@ -22,7 +22,7 @@ public class UserController {
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
-    @PostMapping
+    @PostMapping(consumes = "application/json")
     public User createUser(@RequestBody User user) {
         return userService.createUser(user);
     }
@@ -34,4 +34,6 @@ public class UserController {
     public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
     }
+
+
 }
