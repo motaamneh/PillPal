@@ -3,18 +3,21 @@ package com.motaamneh.pillpal.service;
 import com.motaamneh.pillpal.entity.User;
 import com.motaamneh.pillpal.exception.EmailAlreadyExistsException;
 import com.motaamneh.pillpal.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserService {
+@RequiredArgsConstructor
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
 
-    }
     public User createUser(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new EmailAlreadyExistsException("Email already exists.");
@@ -44,4 +47,10 @@ public class UserService {
     }
 
 
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User existingUser =  userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Email not found for the email: "+email));
+        return new org.springframework.security.core.userdetails.User(existingUser.getEmail(),existingUser.getPassword(), new ArrayList<>());
+
+    }
 }
