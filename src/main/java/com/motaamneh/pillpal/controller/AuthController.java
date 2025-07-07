@@ -3,10 +3,8 @@ package com.motaamneh.pillpal.controller;
 import com.motaamneh.pillpal.io.AuthRequest;
 import com.motaamneh.pillpal.io.AuthResponse;
 import com.motaamneh.pillpal.io.ResetPasswordRequest;
-import com.motaamneh.pillpal.service.EmailService;
 import com.motaamneh.pillpal.service.ProfileService;
 import com.motaamneh.pillpal.util.JwtUtil;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -101,6 +99,31 @@ public class AuthController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    }
+
+    @PostMapping("/send-otp")
+    public void verifyOtp(@CurrentSecurityContext(expression = "authentication?.name")String email) {
+        try {
+            profileService.sendOtp(email);
+
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+    @PostMapping("/verify-otp")
+    public void verifyEmail(@RequestBody Map<String, Object> request,
+        @CurrentSecurityContext(expression = "authentication?.name") String email
+    ) {
+        if (request.get("otp").toString() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing details");
+        }
+        try {
+            profileService.verifyOtp(email,request.get("otp").toString());
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+
+
     }
 
 

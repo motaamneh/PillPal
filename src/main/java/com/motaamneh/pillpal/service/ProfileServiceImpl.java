@@ -80,6 +80,54 @@ public class ProfileServiceImpl implements ProfileService {
 
     }
 
+    @Override
+    public void sendOtp(String email) {
+        User existingUser = userRepository.findByEmail(email).orElseThrow(()->new UsernameNotFoundException("User not found: "+email));
+        if (existingUser.getIsAccountVerified()!=null && existingUser.getIsAccountVerified()) {
+            return;
+
+        }
+        String otp = String.valueOf(ThreadLocalRandom.current().nextInt(100000,1000000));
+        long expiryTime = System.currentTimeMillis()+(24*60*60*1000);
+        existingUser.setVerifyOtp(otp);
+        existingUser.setVerifyOtpExpireAt(expiryTime);
+        userRepository.save(existingUser);
+        try{
+            emailService.sendOtpEmail(existingUser.getEmail(), otp);
+        }catch (Exception e){
+            throw new RuntimeException("Failed to send otp");
+        }
+
+    }
+
+    @Override
+    public void verifyOtp(String email, String otp) {
+        User existingUser = userRepository.findByEmail(email)
+                .orElseThrow(()->new UsernameNotFoundException("User not found: "+email));
+        if(existingUser.getVerifyOtp() ==null || !existingUser.getVerifyOtp().equals(otp)) {
+            throw new RuntimeException("Invalid OTP");
+
+        }
+        if (existingUser.getVerifyOtpExpireAt() < System.currentTimeMillis()) {
+            throw new RuntimeException("OTP Expired");
+        }
+        existingUser.setIsAccountVerified(true);
+        existingUser.setVerifyOtp(null);
+        existingUser.setVerifyOtpExpireAt(0L);
+        userRepository.save(existingUser);
+
+
+
+    }
+
+    @Override
+    public String getLoggedInUser(String email) {
+        User existingUser = userRepository.findByEmail(email)
+                .orElseThrow(()->new UsernameNotFoundException("User not found: "+email));
+        return existingUser.getUserId();
+
+    }
+
     private ProfileResponse convertToProfileResponse(User newProfile) {
         return ProfileResponse.builder()
                 .name(newProfile.getName())
