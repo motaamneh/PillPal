@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
 
     @Override
@@ -39,6 +41,43 @@ public class ProfileServiceImpl implements ProfileService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"+email));
 
         return convertToProfileResponse(existingUser);
+    }
+
+    @Override
+    public void sendResetOtp(String email) {
+        User existingUser = userRepository.findByEmail(email).
+                orElseThrow(()->new UsernameNotFoundException("User not found"+email));
+
+        String otp = String.valueOf(ThreadLocalRandom.current().nextInt(100000,1000000));
+
+        long expiryTime = System.currentTimeMillis()+(15*60*1000);
+
+        existingUser.setResetOtp(otp);
+        existingUser.setResetOtpExpireAt(expiryTime);
+        userRepository.save(existingUser);
+
+        try{
+
+            emailService.sendResetOtpEmail(existingUser.getEmail(), otp);
+        }catch (Exception e){
+            throw new RuntimeException("Failed to send reset otp");
+        }
+    }
+
+    @Override
+    public void resetPassword(String email, String otp, String newPassword) {
+        User existingUser = userRepository.findByEmail(email).orElseThrow(()->new UsernameNotFoundException("User not found"+email));
+        if(existingUser.getResetOtp() == null|| !existingUser.getResetOtp().equals(otp)) {
+            throw new RuntimeException("Invalid OTP");
+        }
+        if(existingUser.getResetOtpExpireAt() < System.currentTimeMillis()) {
+            throw new RuntimeException("OTP Expired");
+        }
+        existingUser.setPassword(passwordEncoder.encode(newPassword));
+        existingUser.setResetOtp(null);
+        existingUser.setResetOtpExpireAt(0L);
+        userRepository.save(existingUser);
+
     }
 
     private ProfileResponse convertToProfileResponse(User newProfile) {
