@@ -120,13 +120,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     }
 
-    @Override
-    public String getLoggedInUser(String email) {
-        User existingUser = userRepository.findByEmail(email)
-                .orElseThrow(()->new UsernameNotFoundException("User not found: "+email));
-        return existingUser.getUserId();
 
-    }
 
     private ProfileResponse convertToProfileResponse(User newProfile) {
         return ProfileResponse.builder()
