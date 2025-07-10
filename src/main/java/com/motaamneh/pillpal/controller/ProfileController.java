@@ -23,6 +23,7 @@ public class ProfileController {
     public ProfileResponse register(@Valid @RequestBody ProfileRequest request) {
         ProfileResponse response = profileService.createProfile(request);
         emailService.sendWelcomeEmail(response.getEmail(),response.getName());
+        profileService.sendOtp(response.getEmail());
 
         return response;
 

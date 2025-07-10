@@ -30,6 +30,10 @@
         <java.version>17</java.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
         <!--Mail sender-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

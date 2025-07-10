@@ -9,14 +9,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
+    private static final Logger logger = LoggerFactory.getLogger(ProfileServiceImpl.class);
+
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -80,24 +84,33 @@ public class ProfileServiceImpl implements ProfileService {
 
     }
 
+    // ProfileServiceImpl.java
     @Override
+    @Transactional
     public void sendOtp(String email) {
-        User existingUser = userRepository.findByEmail(email).orElseThrow(()->new UsernameNotFoundException("User not found: "+email));
-        if (existingUser.getIsAccountVerified()!=null && existingUser.getIsAccountVerified()) {
-            return;
+        User existingUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
 
+        // Properly handle Boolean object with null safety
+        if (existingUser.getIsAccountVerified() != null && existingUser.getIsAccountVerified()) {
+            logger.info("Account already verified for email: {}", email);
+            return;
         }
-        String otp = String.valueOf(ThreadLocalRandom.current().nextInt(100000,1000000));
-        long expiryTime = System.currentTimeMillis()+(24*60*60*1000);
+
+        String otp = String.valueOf(ThreadLocalRandom.current().nextInt(100000, 1000000));
+        long expiryTime = System.currentTimeMillis() + (24 * 60 * 60 * 1000); // 24 hours
         existingUser.setVerifyOtp(otp);
         existingUser.setVerifyOtpExpireAt(expiryTime);
         userRepository.save(existingUser);
-        try{
-            emailService.sendOtpEmail(existingUser.getEmail(), otp);
-        }catch (Exception e){
-            throw new RuntimeException("Failed to send otp");
-        }
+        logger.info("Generated OTP for user: {}", email);
 
+        try {
+            emailService.sendOtpEmailWithRetry(existingUser.getEmail(), otp, 3);
+            logger.info("Verification OTP sent to: {}", email);
+        } catch (Exception e) {
+            logger.error("Failed to send OTP to: {} - {}", email, e.getMessage());
+            throw new RuntimeException("Failed to send verification email");
+        }
     }
 
     @Override
