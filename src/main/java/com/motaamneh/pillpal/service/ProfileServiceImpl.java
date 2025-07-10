@@ -133,6 +133,13 @@ public class ProfileServiceImpl implements ProfileService {
 
     }
 
+    @Override
+    public boolean isAccountVerified(String email) {
+        User existingUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
+
+        return Boolean.TRUE.equals(existingUser.getIsAccountVerified());
+    }
 
 
     private ProfileResponse convertToProfileResponse(User newProfile) {

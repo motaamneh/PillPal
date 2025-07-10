@@ -18,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -124,6 +125,17 @@ public class AuthController {
         }
 
 
+    }
+    @GetMapping("/is-verified")
+    public ResponseEntity<Boolean> isVerified(@CurrentSecurityContext(expression = "authentication?.name") String email) {
+        try {
+            boolean isVerified = profileService.isAccountVerified(email);
+            return ResponseEntity.ok(isVerified);
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(false);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
     }
 
 
