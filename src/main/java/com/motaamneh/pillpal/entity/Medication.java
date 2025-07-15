@@ -24,6 +24,17 @@ public class Medication {
     private String name;
     private String dosage;
     private String description;
+//    @Transient // Mark as transient so it's not persisted
+//    private Boolean isTakenToday;
+//
+//    // Add getter and setter
+//    public Boolean getIsTakenToday() {
+//        return isTakenToday;
+//    }
+//
+//    public void setIsTakenToday(Boolean taken) {
+//        isTakenToday = taken;
+//    }
 
     @ManyToOne
     @JoinColumn(name = "user_id")

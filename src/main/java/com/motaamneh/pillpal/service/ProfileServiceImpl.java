@@ -144,6 +144,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     private ProfileResponse convertToProfileResponse(User newProfile) {
         return ProfileResponse.builder()
+                .id(newProfile.getId())
                 .name(newProfile.getName())
                 .email(newProfile.getEmail())
                 .userId(newProfile.getUserId())
