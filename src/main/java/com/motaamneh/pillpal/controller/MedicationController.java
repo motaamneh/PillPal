@@ -1,5 +1,7 @@
 package com.motaamneh.pillpal.controller;
 
+import com.motaamneh.pillpal.dto.MedicationResponse;
+import com.motaamneh.pillpal.dto.ScheduleResponse;
 import com.motaamneh.pillpal.entity.Medication;
 import com.motaamneh.pillpal.service.MedicationLogService;
 import com.motaamneh.pillpal.service.MedicationService;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/medications")
@@ -18,10 +21,33 @@ public class MedicationController {
     private final MedicationLogService medicationLogService;
 
     @GetMapping("/user/{userId}")
-    public List<Medication> getMedicationsByUser(@PathVariable Long userId) {
-        return medicationService.getMedicationsByUserId(userId);
-
+    public List<MedicationResponse> getMedicationsByUser(@PathVariable Long userId) {
+        List<Medication> meds = medicationService.getMedicationsByUserId(userId);
+        return meds.stream()
+                .map(this::convertToMedicationResponse)
+                .collect(Collectors.toList());
     }
+
+    private MedicationResponse convertToMedicationResponse(Medication med) {
+        List<ScheduleResponse> scheduleResponses = med.getSchedules().stream()
+                .map(schedule -> new ScheduleResponse(
+                        schedule.getId(),
+                        schedule.getTime().toString(),
+                        schedule.getRepeatType(),
+                        schedule.getDaysOfWeek(),
+                        schedule.getStartDate().toString(),
+                        schedule.getEndDate().toString()
+                )).collect(Collectors.toList());
+
+        return new MedicationResponse(
+                med.getId(),
+                med.getName(),
+                med.getDosage(),
+                med.getDescription(),
+                scheduleResponses
+        );
+    }
+
     @PostMapping("/user/{userId}")
     public Medication createMedication(@PathVariable Long userId, @RequestBody Medication medication) {
         return medicationService.createMedication(userId,medication);

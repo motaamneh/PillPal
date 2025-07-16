@@ -21,6 +21,11 @@ public class MedicationService {
     }
 
     public Medication createMedication(Long userId, Medication medication) {
+        if (medication.getName() == null || medication.getName().isEmpty()) {
+            throw new IllegalArgumentException("Medication name cannot be empty");
+        }
+        medication.setDescription(Optional.ofNullable(medication.getDescription()).orElse("No description"));
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
