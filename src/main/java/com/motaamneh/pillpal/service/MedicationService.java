@@ -1,5 +1,7 @@
 package com.motaamneh.pillpal.service;
 
+import com.motaamneh.pillpal.dto.MedicationResponse;
+import com.motaamneh.pillpal.dto.ScheduleResponse;
 import com.motaamneh.pillpal.entity.Medication;
 import com.motaamneh.pillpal.entity.User;
 import com.motaamneh.pillpal.repository.MedicationRepository;
@@ -59,5 +61,26 @@ public class MedicationService {
     public void deleteMedication(Long id) {
         medicationRepository.deleteById(id);
     }
+
+    private MedicationResponse convertToMedicationResponse(Medication med) {
+        List<ScheduleResponse> schedules = med.getSchedules().stream()
+                .map(s -> new ScheduleResponse(
+                        s.getId(),
+                        s.getTime().toString(),
+                        s.getRepeatType(),
+                        s.getDaysOfWeek(),
+                        s.getStartDate().toString(),
+                        s.getEndDate().toString()
+                )).toList();
+
+        return new MedicationResponse(
+                med.getId(),
+                med.getName(),
+                med.getDosage(),
+                med.getDescription(),
+                schedules
+        );
+    }
+
 
 }
