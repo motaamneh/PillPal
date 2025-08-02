@@ -14,6 +14,7 @@ public class MedicationResponse {
     private String name;
     private String dosage;
     private String description;
+    private Long scheduleId;
     private List<ScheduleResponse> schedules;
 }
 

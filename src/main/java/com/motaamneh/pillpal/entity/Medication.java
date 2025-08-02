@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -24,6 +25,10 @@ public class Medication {
     private String name;
     private String dosage;
     private String description;
+    @Getter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_id", nullable = true)
+    private Schedule schedule;
 //    @Transient // Mark as transient so it's not persisted
 //    private Boolean isTakenToday;
 //
@@ -45,4 +50,9 @@ public class Medication {
 
     @OneToMany(mappedBy = "medication", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MedicationLog> logs;
+
+
+    public Long getScheduleId() {
+        return this.schedule != null ? this.schedule.getId() : null;
+    }
 }

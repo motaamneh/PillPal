@@ -37,9 +37,9 @@ public class MedicationService {
     public List<Medication> getAllMedications() {
         return medicationRepository.findAll();
     }
-    public List<Medication> getMedicationsByUserId(Long userId) {
-        return medicationRepository.findByUserId(userId);
-    }
+//    public List<Medication> getMedicationsByUserId(Long userId) {
+//        return medicationRepository.findByUserId(userId);
+//    }
 
 
     public Optional<Medication> getUserMedicationById(Long id) {
@@ -62,6 +62,17 @@ public class MedicationService {
         medicationRepository.deleteById(id);
     }
 
+    // In MedicationService
+    public List<Medication> getMedicationsByUserId(Long userId) {
+        List<Medication> meds = medicationRepository.findByUserId(userId);
+        // Initialize schedule if needed
+        meds.forEach(med -> {
+            if (med.getSchedule() != null) {
+                med.getSchedule().getId(); // Triggers lazy loading
+            }
+        });
+        return meds;
+    }
     private MedicationResponse convertToMedicationResponse(Medication med) {
         List<ScheduleResponse> schedules = med.getSchedules().stream()
                 .map(s -> new ScheduleResponse(
@@ -78,6 +89,7 @@ public class MedicationService {
                 med.getName(),
                 med.getDosage(),
                 med.getDescription(),
+                med.getScheduleId(),
                 schedules
         );
     }

@@ -13,4 +13,5 @@ public interface MedicationLogRepository extends JpaRepository<MedicationLog, Lo
     boolean existsByScheduleIdAndDate(Long scheduleId, LocalDate date);
     boolean existsBySchedule_IdAndTakenAtBetween(Long scheduleId, LocalDateTime start, LocalDateTime end);
 
+    boolean existsByMedication_IdAndDate(Long medicationId, LocalDate date);
 }
