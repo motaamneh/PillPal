@@ -11,6 +11,8 @@ Spring Boot backend for PillPal - a medication reminder application that helps u
 🔄 Daily Reset - Automatic reset of medication status at midnight
 📱 RESTful APIs - Clean, consistent API design for Flutter frontend
 🔒 Security - Password encryption, SQL injection prevention, secure headers
+
+
 🛠️ Tech Stack
 
 Framework: Spring Boot 3.0
