@@ -19,8 +19,9 @@ Database: PostgreSQL 15
 Security: Spring Security + JWT
 ORM: Spring Data JPA + Hibernate
 Build Tool: Maven
-Testing: JUnit 5, Mockito
+Testing: Postman
 Validation: Bean Validation API
+
 📋 Prerequisites
 
 Java 17 or higher
