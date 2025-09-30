@@ -1,16 +1,5 @@
 PillPal Backend - Medication Reminder API 💊
 
-[https://img.shields.io/badge/Java-17-orange.svg
-https://img.shields.io/badge/Spring%2520Boot-3.0-green.svg
-https://img.shields.io/badge/PostgreSQL-15-blue.svg
-https://img.shields.io/badge/JWT-Auth-yellow.svg
-https://img.shields.io/badge/Maven-3.6+-red.svg]
-(https://img.shields.io/badge/Java-17-orange
-https://img.shields.io/badge/Spring_Boot-3.0-green
-https://img.shields.io/badge/PostgreSQL-15-blue
-https://img.shields.io/badge/JWT-Auth-yellow
-https://img.shields.io/badge/Maven-3.6+-red)
-
 Spring Boot backend for PillPal - a medication reminder application that helps users track their daily medications and never miss a dose.
 
 🚀 Features
